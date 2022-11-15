@@ -2,72 +2,73 @@
 //currently working on api requests
 
 
-import * as React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import React, { useState, setState } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, FlatList } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import axios from 'axios';
 
 export default function RemoteScreen({navigation}){
+
+    const buttons = [
+        {id:'3', button:'LR', motion:'turn_left'},
+        {id:'4', button:'U', motion:'walk_forward_short'},
+        {id:'5', button:'RR', motion:'turn_right'},
+        {id:'6', button:'L', motion:'walk_left'},
+        {id:'7', button:'stop', motion:'stop'},
+        {id:'8', button:'R', motion:'walk_right'},
+        {id:'9', button:'LA', motion:'walk_forward_4step'},
+        {id:'10', button:'D', motion:'basic_motion'},
+        {id:'11', button:'RA', motion:'walk_forward_6step'},
+        //{id:'1', button: 'A', motion:'basic_motion'},
+        //{id:'2', button:'B', motion:'kick_right'},
+        
+        //need to figure out how to add multiple styles for A and B buttons in flatlist
+        
+        
+    ]
+    //need to add icons to every button
+    const icons = [
+
+    ]
+    
+    //prints motion for button press to console 
+    const handlePress = (motion) =>{
+        console.log(motion);
+    }
+   
+    //api call
+    const buttonPress= () => {
+        fetch("http://localhost:3000/api")
+        .then(res => {
+            console.log(res.status);
+            console.log(res.headers);
+            return res.json();
+        })
+        .then((result) => {
+            console.log(result);
+        }),
+        (error) => {
+            console.log(error);
+        }
+    }
 
     return(
         <View style={styles.container}>
             <View style={styles.controller}>
-                <View style={styles.row}>
-                    <TouchableOpacity style={styles.controllerButtons}>
-                        <Ionicons name="return-up-back" size={40} color="white" />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.controllerButtons}>
-                        <Ionicons name="arrow-up" size={40} color="white"/>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.controllerButtons}>
-                        <Ionicons name="return-up-forward" size={40} color="white"/>
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.row}>
-                    <TouchableOpacity style={styles.controllerButtons}>
-                        <Ionicons name="arrow-back" size={40} color="white" />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.controllerButtons}>
-                        <Entypo name="controller-stop" size={40} color="white" />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.controllerButtons}>
-                        <Ionicons name="arrow-forward" size={40} color="white" />
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.row}>
-                    <TouchableOpacity style={styles.controllerButtons}>
-                        <Text style={styles.funcButtons}>LFN</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.controllerButtons}>
-                        <Ionicons name="arrow-down" size={40} color="white"/>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.controllerButtons}>
-                        <Text style={styles.funcButtons}>RFN</Text>
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.ab}>
-                    <TouchableOpacity style={{
-                        alignItems:'center',
-                        justifyContent:'center',
-                        width:75, 
-                        height:75, 
-                        borderRadius:100, 
-                        backgroundColor:'rgba(16,99,222,0.7)',
-                    }}>
-                        <Text style={styles.funcButtons}>A</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={{
-                        alignItems:'center',
-                        justifyContent:'center',
-                        width:75, 
-                        height:75, 
-                        borderRadius:100, 
-                        backgroundColor:'rgba(16,99,222,0.7)',
-                    }}>
-                        <Text style={styles.funcButtons}>B</Text>
-                    </TouchableOpacity>
-                </View>
+                <FlatList
+                    contentContainerStyle={{flexGrow: 1, justifyContent:'center'}}
+                    keyExtractor={(item) => item.id}
+                    data={buttons}
+                    numColumns={3}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity style={styles.controllerButtons} onPress={() => {
+                            buttonPress
+                        }}>
+                            <Text style={styles.funcButtons}>{item.button}</Text>
+                        </TouchableOpacity>
+                    )}
+                    />
             </View>
         </View>
     );

@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons'; 
+import axios from 'axios';
+
+
+//need to add connection to port as well
 
 export default function HomeScreen({navigation}){
 
