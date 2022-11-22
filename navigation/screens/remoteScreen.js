@@ -11,15 +11,15 @@ import axios from 'axios';
 export default function RemoteScreen({navigation}){
 
     const buttons = [
-        {id:'3', button:'LR', motion:'turn_left'},
-        {id:'4', button:'U', motion:'walk_forward_short'},
-        {id:'5', button:'RR', motion:'turn_right'},
-        {id:'6', button:'L', motion:'walk_left'},
-        {id:'7', button:'stop', motion:'stop'},
-        {id:'8', button:'R', motion:'walk_right'},
-        {id:'9', button:'LA', motion:'walk_forward_4step'},
-        {id:'10', button:'D', motion:'basic_motion'},
-        {id:'11', button:'RA', motion:'walk_forward_6step'},
+        {id:'3', button:'LR', motion:'turn_left', motionID: 2, icon: "return-up-back", iconType: "ion"},
+        {id:'4', button:'U', motion:'walk_forward_short', motionID: 3, icon: "arrow-up", iconType: "ion"},
+        {id:'5', button:'RR', motion:'turn_right', motionID: 4, icon: "return-up-forward", iconType: "ion"},
+        {id:'6', button:'L', motion:'walk_left', motionID: 5, icon: "arrow-back", iconType: "ion"},
+        {id:'7', button:'stop', motion:'stop', motionID: 12, icon: "controller-stop", iconType: "entypo"},
+        {id:'8', button:'R', motion:'walk_right', motionID: 6, icon: "arrow-forward", iconType: "ion"},
+        {id:'9', button:'LA', motion:'walk_forward_4step', motionID: 7, icon: null, iconType: "text"},
+        {id:'10', button:'D', motion:'basic_motion', motionID: 0, icon: "arrow-down", iconType: "ion"},
+        {id:'11', button:'RA', motion:'walk_forward_6step', motionID: 9, icon: null, iconType: "text"},
         //{id:'1', button: 'A', motion:'basic_motion'},
         //{id:'2', button:'B', motion:'kick_right'},
         
@@ -38,19 +38,19 @@ export default function RemoteScreen({navigation}){
     }
    
     //api call
-    const buttonPress= () => {
-        fetch("http://localhost:3000/api")
+    const buttonPress= (motionID) => {
+        console.log("Calling motion: " + motionID)
+        fetch("http://192.168.68.66:50000/motion/" + motionID)
         .then(res => {
             console.log(res.status);
-            console.log(res.headers);
+            // console.log(res.headers);
             return res.json();
         })
         .then((result) => {
             console.log(result);
-        }),
-        (error) => {
-            console.log(error);
-        }
+        }).catch((error) => {
+            console.error(error);
+        })
     }
 
     return(
@@ -63,9 +63,18 @@ export default function RemoteScreen({navigation}){
                     numColumns={3}
                     renderItem={({ item }) => (
                         <TouchableOpacity style={styles.controllerButtons} onPress={() => {
-                            buttonPress
+                            buttonPress(item.motionID)
                         }}>
-                            <Text style={styles.funcButtons}>{item.button}</Text>
+                            { item.iconType === "ion" &&
+                                <Ionicons name={item.icon} size={40} color="white"/>
+                            }
+                            { item.iconType === "text" &&
+                                <Text style={styles.funcButtons}>{item.button}</Text>
+                            }
+                            { item.iconType === "entypo" &&
+                                <Entypo name={ item.icon } size={40} color="white" />
+                            }
+                            
                         </TouchableOpacity>
                     )}
                     />
