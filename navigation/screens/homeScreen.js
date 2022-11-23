@@ -2,11 +2,18 @@ import * as React from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons'; 
 import axios from 'axios';
+import IpContext from '../../state/IpContext';
 
 
 //need to add connection to port as well
 
 export default function HomeScreen({navigation}){
+
+    const { ipAddress, setIpAddress } = React.useContext(IpContext)
+
+    function onChange(event) {
+        setIpAddress(event);
+    }
 
     const connectPressed = () => {
         navigation.navigate('Remote');
@@ -18,7 +25,9 @@ export default function HomeScreen({navigation}){
                 <FontAwesome5 name='robot' size={100} color='black'/>
                 <TextInput
                     style={styles.input}
-                    placeholder='IP Address'>
+                    placeholder='IP Address'
+                    onChangeText={onChange}
+                    >
                 </TextInput>
                 <TouchableOpacity style={styles.connectButton} onPress={connectPressed}>
                     <Text style={styles.inputText}>CONNECT</Text>

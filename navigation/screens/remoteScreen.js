@@ -27,10 +27,8 @@ export default function RemoteScreen({navigation}){
         
         
     ]
-    //need to add icons to every button
-    const icons = [
 
-    ]
+    const { ipAddress, setIpAddress } = React.useContext(IpContext)
     
     //prints motion for button press to console 
     const handlePress = (motion) =>{
@@ -40,7 +38,7 @@ export default function RemoteScreen({navigation}){
     //api call
     const buttonPress= (motionID) => {
         console.log("Calling motion: " + motionID)
-        fetch("http://192.168.68.66:50000/motion/" + motionID)
+        fetch(`http://${ipAddress}:50000/motion/${motionID}`)
         .then(res => {
             console.log(res.status);
             // console.log(res.headers);
