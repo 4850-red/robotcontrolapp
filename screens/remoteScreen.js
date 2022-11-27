@@ -61,7 +61,8 @@ export default function RemoteScreen({navigation}){
                     numColumns={3}
                     renderItem={({ item }) => (
                         <TouchableOpacity style={styles.controllerButtons} onPress={() => {
-                            buttonPress(item.motionID)
+                           buttonPress(item.motionID)
+                           //handlePress(item.motion)
                         }}>
                             { item.iconType === "ion" &&
                                 <Ionicons name={item.icon} size={40} color="white"/>

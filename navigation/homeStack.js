@@ -6,16 +6,16 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
 //screens
-import HomeScreen from './screens/homeScreen'
-import RemoteScreen from './screens/remoteScreen'
-import MotionScreen from './screens/motionScreen'
-import CameraScreen from './screens/cameraScreen'
+import HomeScreen from '../screens/homeScreen'
+import RemoteScreen from '../screens/remoteScreen'
+import MotionScreen from '../screens/motionScreen'
+import MotorScreen from '../screens/motorScreen'
 
 //screen names
 const homeName = 'Home';
 const remoteName = 'Remote';
-const motionName = 'Motion';
-const cameraName = 'Camera';
+const motionName = 'Motions';
+const motorName = 'Motors';
 
 const Tab = createBottomTabNavigator();
 
@@ -42,8 +42,8 @@ export default function MainContainer(){
                             iconName = focused ? 'game-controller' : 'game-controller-outline'
                         } else if (routeName === motionName){
                             iconName = focused ? 'list-circle' : 'list-outline'
-                        } else if (routeName === cameraName){
-                            iconName = focused ? 'camera' : 'camera-outline'
+                        } else if (routeName === motorName){
+                            iconName = focused ? 'ios-body' : 'ios-body-outline'
                         }
 
                         return <Ionicons name={iconName} size={size} color={color}/>
@@ -51,14 +51,14 @@ export default function MainContainer(){
 
                     tabBarActiveTintColor: '#011471',
                     tabBarInactiveTintColor: '#5C6074',
-                    tabBarLabelStyle: {paddingBottom: 10, fontSize: 10}
+                    tabBarLabelStyle: {paddingBottom: 5, paddingTop:5, fontSize: 10}
 
                 })}>
     
                 <Tab.Screen name={homeName} component={HomeScreen} options={{tabBarStyle: {display: 'none'}}}/> 
                 <Tab.Screen name={remoteName} component={RemoteScreen}/>
                 <Tab.Screen name={motionName} component={MotionScreen}/>
-                <Tab.Screen name={cameraName} component={CameraScreen}/>
+                <Tab.Screen name={motorName} component={MotorScreen}/>
 
                 
             </Tab.Navigator>

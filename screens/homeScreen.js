@@ -66,7 +66,7 @@ export default function HomeScreen({navigation}){
         <View style={styles.container}>
             <View style={styles.loginContainer}>
                 <FontAwesome5 name='robot' size={100} color='black'/>
-                { hasPermission === true && scanned === false &&
+                {hasPermission === true && scanned === false &&
                     <BarCodeScanner 
                     onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
                     style={StyleSheet.absoluteFill}
@@ -97,17 +97,14 @@ export default function HomeScreen({navigation}){
                     <TouchableOpacity style={styles.connectButton} onPress={onRescan}>
                         <Text style={styles.inputText}>RESCAN</Text>
                     </TouchableOpacity>
-                }
+                 }
                 
-                
-                
-                {/* <TextInput
+                <TextInput
                     style={styles.input}
                     placeholder='IP Address'
                     onChangeText={onChange}
                     >
                 </TextInput>
-                 */}
             </View>
         </View>
     );
