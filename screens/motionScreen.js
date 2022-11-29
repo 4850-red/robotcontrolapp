@@ -19,7 +19,7 @@ export default function MotionScreen({navigation}){
             const id = setTimeout(() => {
                 controller.abort()
             }, 500)
-            const response = fetch(`http://${ipAddress}:50000/motion`, { signal: controller.signal })
+            fetch(`http://${ipAddress}:50000/motion`, { signal: controller.signal })
             .then(async (response) => {
                 clearTimeout(id);
                 try {
