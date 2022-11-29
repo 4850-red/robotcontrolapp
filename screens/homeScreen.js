@@ -2,8 +2,8 @@ import * as React from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons'; 
 import axios from 'axios';
-import IpContext from '../../state/IpContext';
-import { BarCodeScanner } from 'expo-barcode-scanner'
+import IpContext from '../state/IpContext';
+import { BarCodeScanner, requestPermissionsAsync } from 'expo-barcode-scanner'
 
 const reg = /http:\/\/(?<ip>\d+.\d+.\d+.\d+):50000/;
 
@@ -12,6 +12,8 @@ const reg = /http:\/\/(?<ip>\d+.\d+.\d+.\d+):50000/;
 export default function HomeScreen({navigation}){
 
     const { ipAddress, setIpAddress } = React.useContext(IpContext)
+
+    const [ useQRCode, setUseQRCode ] = React.useState(null);
 
     const [hasPermission, setHasPermission] = React.useState(null);
 
@@ -25,6 +27,10 @@ export default function HomeScreen({navigation}){
             setHasPermission(status === 'granted');
         })();
     });
+
+    function enterManually() {
+        setUseQRCode(false);
+    }
 
     const handleBarCodeScanned = ({ type, data }) => {
         setScanned(true);
@@ -47,6 +53,7 @@ export default function HomeScreen({navigation}){
     }
 
     function onRescan() {
+        setUseQRCode(true);
         setSuccess(false);
         setScanned(false);
     }
@@ -55,32 +62,35 @@ export default function HomeScreen({navigation}){
         navigation.navigate('Remote');
     }
 
-    if (hasPermission === null) {
-        return <Text>Requesting for camera permission</Text>;
-    }
-    if (hasPermission === false) {
-        return <Text>No access to camera</Text>;
-    }
-
     return(
         <View style={styles.container}>
             <View style={styles.loginContainer}>
                 <FontAwesome5 name='robot' size={100} color='black'/>
-                {hasPermission === true && scanned === false &&
+                { useQRCode === null &&
+                    <>
+                        <TouchableOpacity style={styles.connectButton} onPress={ onRescan }>
+                            <Text style={styles.inputText}>SCAN QR CODE</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.connectButton} onPress={ enterManually }>
+                            <Text style={styles.inputText}>ENTER IP MANUALLY</Text>
+                        </TouchableOpacity>
+                    </>
+                }
+                { useQRCode && hasPermission === true && scanned === false &&
                     <BarCodeScanner 
-                    onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-                    style={StyleSheet.absoluteFill}
+                        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+                        style={StyleSheet.absoluteFill}
                     />
                 }
-                { hasPermission === null &&
+                { useQRCode && hasPermission === null &&
                     <Text>Requesting for camera permission</Text>
                 }
 
-                { hasPermission === false &&
+                { useQRCode && hasPermission === false &&
                     <Text>No access to camera</Text>
                 }
 
-                { scanned == true && success == true &&
+                { useQRCode && scanned == true && success == true &&
                     <>
                         <Text>Detected IP: { ipAddress }</Text>
                         <TouchableOpacity style={styles.connectButton} onPress={connectPressed}>
@@ -91,20 +101,34 @@ export default function HomeScreen({navigation}){
                         </TouchableOpacity>
                     </>
                 }
-                {
-                    scanned == true && success == false &&
+                { useQRCode && scanned == true && success == false &&
+                    <>
+                        <TouchableOpacity style={styles.connectButton} onPress={onRescan}>
+                            <Text style={styles.inputText}>RESCAN</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.connectButton} onPress={enterManually}>
+                            <Text style={styles.inputText}>ENTER IP MANUALLY</Text>
+                        </TouchableOpacity>
+                    </>
+                }
 
-                    <TouchableOpacity style={styles.connectButton} onPress={onRescan}>
-                        <Text style={styles.inputText}>RESCAN</Text>
+                { useQRCode === false && 
+                <>
+                    <TextInput
+                        style={styles.input}
+                        placeholder='IP Address'
+                        onChangeText={onChange}
+                    />
+                    <TouchableOpacity style={styles.connectButton} onPress={connectPressed}>
+                        <Text style={styles.inputText}>CONNECT</Text>
                     </TouchableOpacity>
-                 }
+                    <TouchableOpacity style={styles.connectButton} onPress={ onRescan }>
+                        <Text style={styles.inputText}>SCAN QR CODE</Text>
+                    </TouchableOpacity>
+                </>
+                }
                 
-                <TextInput
-                    style={styles.input}
-                    placeholder='IP Address'
-                    onChangeText={onChange}
-                    >
-                </TextInput>
+                
             </View>
         </View>
     );

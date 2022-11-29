@@ -7,6 +7,7 @@ import { StyleSheet, View, Text, TouchableOpacity, FlatList } from 'react-native
 import { Entypo } from '@expo/vector-icons';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import axios from 'axios';
+import IpContext from '../state/IpContext';
 
 export default function RemoteScreen({navigation}){
 

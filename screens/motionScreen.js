@@ -3,29 +3,73 @@
 
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, FlatList } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import IpContext from '../state/IpContext';
 
 export default function MotionScreen({navigation}){
 
-    const buttons = [
-        //need to add motions for gangnam style, demo, intro, etc
-        {id:'1', button: 'A', motion:'basic_motion'},
-        {id:'2', button:'B', motion:'kick_right'},
-        {id:'3', button:'LR', motion:'turn_left', motionID: 2, icon: "return-up-back", iconType: "ion"},
-        {id:'4', button:'U', motion:'walk_forward_short', motionID: 3, icon: "arrow-up", iconType: "ion"},
-        {id:'5', button:'RR', motion:'turn_right', motionID: 4, icon: "return-up-forward", iconType: "ion"},
-        {id:'6', button:'L', motion:'walk_left', motionID: 5, icon: "arrow-back", iconType: "ion"},
-        {id:'7', button:'stop', motion:'stop', motionID: 12, icon: "controller-stop", iconType: "entypo"},
-        {id:'8', button:'R', motion:'walk_right', motionID: 6, icon: "arrow-forward", iconType: "ion"},
-        {id:'9', button:'LA', motion:'walk_forward_4step', motionID: 7, icon: null, iconType: "text"},
-        {id:'10', button:'D', motion:'basic_motion', motionID: 0, icon: "arrow-down", iconType: "ion"},
-        {id:'11', button:'RA', motion:'walk_forward_6step', motionID: 9, icon: null, iconType: "text"},
+    const [motions, setMotions] = React.useState([]);
+
+    const { ipAddress, setIpAddress } = React.useContext(IpContext);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            const controller = new AbortController();
+
+            const id = setTimeout(() => {
+                controller.abort()
+            }, 500)
+            const response = fetch(`http://${ipAddress}:50000/motion`, { signal: controller.signal })
+            .then(async (response) => {
+                clearTimeout(id);
+                try {
+                    const json = await response.json();
+                    console.log(json.data);
+                    setMotions(json.data);
+                } catch(err) {
+                    console.error(err);
+                    setMotions([]);
+                    alert("Error loading motions. Invalid IP address?");
+                }
+            }).catch(err => {
+                console.error(err);
+                setMotions([]);
+                alert("Error loading motions. Invalid IP address?");
+            });
+        }, [ipAddress])
+    );
+
+    function callMotion(name) {
+        const controller = new AbortController();
+
+        console.log(`Calling motion: ${name}`);
+        const id = setTimeout(() => {
+            controller.abort()
+        }, 2000)
+        fetch(`http://${ipAddress}:50000/motion/${name}`, { signal: controller.signal })
+        .then(async (response) => {
+            clearTimeout(id);
+            if (response.status === 200) {
+                console.log(await response.json());
+            } else {
+                console.log(await response.json());
+                alert(`API returned invalid/error response. Status code: ${response.status}`)
+            }
+        }).catch(err => {
+            console.error(err);
+            if (err.name === "AbortError") {
+                alert("Error. Motion request timed out.")
+            } else {
+                alert(`Failed to call motion: ${name}. Invalid IP Address?`);
+            }
+        });
         
-    ]
+    }
 
     const ItemView = ({item}) =>{
         return(
-            <TouchableOpacity style={styles.itemStyle}>
-                <Text style={styles.itemText}>{item.id}{'. '}{item.motion.toUpperCase()}</Text>
+            <TouchableOpacity style={styles.itemStyle} onPress={() => callMotion(item.name)}>
+                <Text style={styles.itemText}>{item.id + 1}{'. '}{item.name.toUpperCase()}</Text>
             </TouchableOpacity>
         )
     }
@@ -35,11 +79,20 @@ export default function MotionScreen({navigation}){
     return(
         <View style={styles.container}>
             <View style={styles.motionList}>
-                <FlatList
-                 data={buttons}
-                 keyExtractor={(item) => item.id}
-                 renderItem={ItemView}>
-                </FlatList>
+                { motions.length === 0 &&
+                    <View style={styles.textLabel}>    
+                        <Text>Failed to load motions list.</Text>
+                    </View>
+                }
+                { motions.length > 0 &&
+                    <FlatList
+                    data={motions}
+                    keyExtractor={(item) => item.id}
+                    renderItem={ItemView}
+                    showsVerticalScrollIndicator={false}
+                    />
+                }
+                
             </View>
         </View>
     );
@@ -73,5 +126,12 @@ const styles = StyleSheet.create({
         fontSize:15,
         fontWeight:'bold',
         color:'white'
+    },
+    textLabel: {
+        textAlign: 'center',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1,
+        flexDirection: 'row'
     }
 })
