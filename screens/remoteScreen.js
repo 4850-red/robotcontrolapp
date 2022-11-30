@@ -8,19 +8,20 @@ import { Entypo } from '@expo/vector-icons';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import axios from 'axios';
 import IpContext from '../state/IpContext';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 export default function RemoteScreen({navigation}){
 
     const buttons = [
-        {id:'3', button:'LR', motion:'turn_left', motionID: 2, icon: "return-up-back", iconType: "ion"},
-        {id:'4', button:'U', motion:'walk_forward_short', motionID: 3, icon: "arrow-up", iconType: "ion"},
-        {id:'5', button:'RR', motion:'turn_right', motionID: 4, icon: "return-up-forward", iconType: "ion"},
-        {id:'6', button:'L', motion:'walk_left', motionID: 5, icon: "arrow-back", iconType: "ion"},
-        {id:'7', button:'stop', motion:'stop', motionID: 12, icon: "controller-stop", iconType: "entypo"},
-        {id:'8', button:'R', motion:'walk_right', motionID: 6, icon: "arrow-forward", iconType: "ion"},
-        {id:'9', button:'LA', motion:'walk_forward_4step', motionID: 7, icon: null, iconType: "text"},
-        {id:'10', button:'D', motion:'basic_motion', motionID: 0, icon: "arrow-down", iconType: "ion"},
-        {id:'11', button:'RA', motion:'walk_forward_6step', motionID: 9, icon: null, iconType: "text"},
+        {id:'3', button:'LR', motion:'turn_left', motionID: 3, icon: "return-up-back", iconType: "ion"},
+        {id:'4', button:'U', motion:'walk_forward_short', motionID: 4, icon: "arrow-up", iconType: "ion"},
+        {id:'5', button:'RR', motion:'turn_right', motionID: 5, icon: "return-up-forward", iconType: "ion"},
+        {id:'6', button:'L', motion:'walk_left', motionID: 6, icon: "arrow-back", iconType: "ion"},
+        {id:'7', button:'stop', motion:'stop', motionID: 7, icon: "controller-stop", iconType: "entypo"},
+        {id:'8', button:'R', motion:'walk_right', motionID: 8, icon: "arrow-forward", iconType: "ion"},
+        {id:'9', button:'LA', motion:'walk_forward_4step', motionID: 9, icon: null, iconType: "text"},
+        {id:'10', button:'D', motion:'basic_motion', motionID: 1, icon: "arrow-down", iconType: "ion"},
+        {id:'11', button:'RA', motion:'walk_forward_6step', motionID: 11, icon: null, iconType: "text"},
         //{id:'1', button: 'A', motion:'basic_motion'},
         //{id:'2', button:'B', motion:'kick_right'},
         
@@ -30,6 +31,8 @@ export default function RemoteScreen({navigation}){
     ]
 
     const { ipAddress, setIpAddress } = React.useContext(IpContext)
+
+    const [visible, setVisible] = React.useState(false);
     
     //prints motion for button press to console 
     const handlePress = (motion) =>{
@@ -38,22 +41,41 @@ export default function RemoteScreen({navigation}){
    
     //api call
     const buttonPress= (motionID) => {
+        setVisible(true);
+        const visibleTimeout = setTimeout(() => {
+            setVisible(false);
+        }, 3000)
         console.log("Calling motion: " + motionID)
         fetch(`http://${ipAddress}:50000/motion/${motionID}`)
         .then(res => {
             console.log(res.status);
             // console.log(res.headers);
+            if (res.status !== 200) {
+                clearTimeout(visibleTimeout);
+                setVisible(false);
+                alert(`API returned invalid/error response. Status code: ${response.status}`)
+            }
             return res.json();
         })
         .then((result) => {
             console.log(result);
         }).catch((error) => {
+            setVisible(false);
+            clearTimeout(visibleTimeout);
             console.error(error);
+            alert("Error. Motion request timed out.")
         })
     }
 
     return(
         <View style={styles.container}>
+            <Spinner
+                textContent='Sending Motion...'
+                visible={visible}
+                overlayColor="#000000AA"
+                color='white'
+                textStyle={{color: 'white'}}
+            />
             <View style={styles.controller}>
                 <FlatList
                     contentContainerStyle={{flexGrow: 1, justifyContent:'center'}}

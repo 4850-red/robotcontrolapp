@@ -18,7 +18,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jack4545.RobotControlApp"
     },
     "android": {
       "adaptiveIcon": {

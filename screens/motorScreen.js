@@ -14,7 +14,11 @@ export default function MotorScreen({navigation}){
    //need to grab current position from api 
    const [pos, setPos] = useState(1);
 
+   const [torq, setTorq] = useState(0);
+
    const [motors, setMotors] = useState([]);
+
+   const [motor, setMotor] = useState({ min: 1, max: 254 });
 
    const { ipAddress, setIpAddress } = React.useContext(IpContext)
 
@@ -23,7 +27,7 @@ export default function MotorScreen({navigation}){
 
         const id = setTimeout(() => {
             controller.abort()
-        }, 500)
+        }, 2000)
         fetch(`http://${ipAddress}:50000/motor`, { signal: controller.signal })
         .then(async (response) => {
             clearTimeout(id);
@@ -57,7 +61,7 @@ export default function MotorScreen({navigation}){
         const id = setTimeout(() => {
             controller.abort()
         }, 2000)
-        fetch(`http://${ipAddress}:50000/motor/${value}/${roundedPosition}`, { signal: controller.signal })
+        fetch(`http://${ipAddress}:50000/motor?id=${value}&pos=${roundedPosition}&torq=${torq}`, { signal: controller.signal })
         .then(async (response) => {
             clearTimeout(id);
             if (response.status === 200) {
@@ -95,6 +99,7 @@ export default function MotorScreen({navigation}){
                 onChange={item => {
                     setValue(item.id);
                     setPos(item.default);
+                    setMotor(item);
                 }}>
                 </Dropdown>
                 <Text>SAM ID Map</Text>
@@ -102,15 +107,31 @@ export default function MotorScreen({navigation}){
 
     
                 <Text style={{fontSize:20}}> Change Motor Position:</Text>
-                <Slider
-                style={{width:250, height:10}}
-                minimumValue={1}
-                maximumValue={254}
-                onValueChange={pos => setPos(pos)}
-                value={pos}
-                />
+                <View style={styles.row}>
+                    <Text>Position: {pos}</Text>
+                    <Slider
+                        style={{width: "70%", height: 35, transform: [{ scale: 1.5 }]}}
+                        minimumValue={motor.min}
+                        step={1}
+                        maximumValue={motor.max}
+                        onValueChange={pos => setPos(pos)}
+                        value={pos}
+                    />
+                </View>
+                <View style={styles.row}>
+                    <Text>Torq: {torq}</Text>
+                    <Slider
+                        style={styles.slider}
+                        minimumValue={0}
+                        maximumValue={4}
+                        step={1}
+                        onValueChange={torq => setTorq(torq)}
+                        value={torq}
+                    />
+                </View>
+                
                 <TouchableOpacity style={styles.button} onPress={ sendCall }>
-                        <Text style={styles.inputText}>SEND REQUEST</Text>
+                        <Text style={styles.buttonText}>SEND REQUEST</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -125,19 +146,19 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     camContainer:{
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: "center",
+        justifyContent: "center",
         backgroundColor: '#fff',
         borderRadius: 10,
         width:350,
-        height:650 
+        height:650
     },
     image:{
-        width:'60%',
-        height:'65%'
+        width:'55%',
+        height:'60%'
     },
     dropdown:{
-        margin: 16,
+        marginBottom: 16,
         height: 50,
         width:'95%',
         borderBottomColor: 'gray',
@@ -162,4 +183,21 @@ const styles = StyleSheet.create({
         width: 250,
         height: 50,
     },
+    row: {
+        flex: 1,
+        width: "87%",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between"
+    },
+    slider: {
+        width: "70%", 
+        height: 35, 
+        transform: [{ scale: 1.5 }]
+    },
+    buttonText:{
+        color: 'white',
+        fontSize: 24,
+        fontWeight: 'bold'
+    }
 })
