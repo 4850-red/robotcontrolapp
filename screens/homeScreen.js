@@ -3,7 +3,8 @@ import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-nativ
 import { FontAwesome5 } from '@expo/vector-icons'; 
 import axios from 'axios';
 import IpContext from '../state/IpContext';
-import { BarCodeScanner, requestPermissionsAsync } from 'expo-barcode-scanner'
+import { BarCodeScanner, requestPermissionsAsync } from 'expo-barcode-scanner';
+import { DevSettings } from 'react-native';
 
 const reg = /http:\/\/(?<ip>\d+.\d+.\d+.\d+):50000/;
 
@@ -53,6 +54,7 @@ export default function HomeScreen({navigation}){
     }
 
     function onRescan() {
+        //navigation.navigate('QR');
         setUseQRCode(true);
         setSuccess(false);
         setScanned(false);
@@ -60,6 +62,10 @@ export default function HomeScreen({navigation}){
 
     const connectPressed = () => {
         navigation.navigate('Remote');
+    }
+
+    function backPressed() {
+        DevSettings.reload();
     }
 
     return(
@@ -77,10 +83,17 @@ export default function HomeScreen({navigation}){
                     </>
                 }
                 { useQRCode && hasPermission === true && scanned === false &&
-                    <BarCodeScanner 
+                    <>
+                        <TouchableOpacity style={styles.backButton} onPress={backPressed}>
+                            <Text style={{color: 'white', alignSelf:'center'}}> BACK</Text>
+                        </TouchableOpacity>
+                        <BarCodeScanner 
                         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-                        style={StyleSheet.absoluteFill}
-                    />
+                        //style={StyleSheet.absoluteFill}
+                        style={{width:'100%', height:'75%'}}
+                        />
+                    </>
+
                 }
                 { useQRCode && hasPermission === null &&
                     <Text>Requesting for camera permission</Text>
@@ -173,5 +186,17 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 24,
         fontWeight: 'bold'
+    },
+    backButton:{
+        alignSelf:'flex-end',
+        alignItems:'center',
+        justifyContent: 'center',
+        backgroundColor:  '#1063DE',
+        top: 3,
+        left: 3,
+        width: 50,
+        height: 50,
+        borderRadius: 10,
+        position: 'absolute'
     }
 })
