@@ -18,7 +18,7 @@ export default function MotorScreen({navigation}){
 
    const [motors, setMotors] = useState([]);
 
-   const [motor, setMotor] = useState({ min: 1, max: 254 });
+   const [motor, setMotor] = useState({ min: 1, max: 254, default: 127 });
 
    const { ipAddress, setIpAddress } = React.useContext(IpContext)
 
@@ -50,18 +50,22 @@ export default function MotorScreen({navigation}){
         });
     }, [ipAddress]))
 
-    function sendCall() {
+    function sendCall(position) {
         if (value === null) {
             alert("Please select a motor.")
             return;
         }
         const controller = new AbortController();
-        const roundedPosition = Math.round(pos);
-        console.log(`Calling motor ${value} with position ${ roundedPosition }`);
+        let mapped
+        if (position === null)
+            mapped = pos
+        else
+            mapped = position
+        console.log(`Calling motor ${value} with position ${ mapped }`);
         const id = setTimeout(() => {
             controller.abort()
         }, 2000)
-        fetch(`http://${ipAddress}:50000/motor?id=${value}&pos=${roundedPosition}&torq=${torq}`, { signal: controller.signal })
+        fetch(`http://${ipAddress}:50000/motor?id=${value}&pos=${mapped}&torq=${torq}`, { signal: controller.signal })
         .then(async (response) => {
             clearTimeout(id);
             if (response.status === 200) {
@@ -78,6 +82,10 @@ export default function MotorScreen({navigation}){
                 alert(`Failed to call motor: ${value}, position: ${ roundedPosition }. Invalid IP Address?`);
             }
         });
+    }
+
+    function reset() {
+        sendCall(motor.default)
     }
 
     return(
@@ -110,7 +118,7 @@ export default function MotorScreen({navigation}){
                 <View style={styles.row}>
                     <Text>Position: {pos}</Text>
                     <Slider
-                        style={{width: "70%", height: 35, transform: [{ scale: 1.5 }]}}
+                        style={styles.slider}
                         minimumValue={motor.min}
                         step={1}
                         maximumValue={motor.max}
@@ -129,10 +137,15 @@ export default function MotorScreen({navigation}){
                         value={torq}
                     />
                 </View>
-                
-                <TouchableOpacity style={styles.button} onPress={ sendCall }>
-                        <Text style={styles.buttonText}>SEND REQUEST</Text>
-                </TouchableOpacity>
+
+                <View style={styles.buttonRow}>
+                    <TouchableOpacity style={styles.button} onPress={ () => sendCall(null) }>
+                            <Text style={styles.buttonText}>SEND</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button} onPress={ reset }>
+                            <Text style={styles.buttonText}>RESET</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         </View>
     );
@@ -178,22 +191,31 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#1063DE',
-        margin: 10,
         borderRadius: 10,
-        width: 250,
-        height: 50,
+        width: "40%",
+        height: 45,
+        marginStart: 5,
+        marginEnd: 5,
+        marginBottom: 10
     },
     row: {
         flex: 1,
-        width: "87%",
+        width: "90%",
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between"
     },
+    buttonRow: {
+        flex: 1,
+        width: "100%",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center"
+    },
     slider: {
         width: "70%", 
         height: 35, 
-        transform: [{ scale: 1.5 }]
+        transform: [{ scale: 1 }]
     },
     buttonText:{
         color: 'white',

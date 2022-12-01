@@ -35,7 +35,7 @@ export default function HomeScreen({navigation}){
 
     const handleBarCodeScanned = ({ type, data }) => {
         setScanned(true);
-        if (type !== 256) {
+        if (type !== 256 && type !== "org.iso.QRCode") {
             alert("Invalid QR Code. Scan again.");
             return;
         }
