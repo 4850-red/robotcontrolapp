@@ -20,14 +20,18 @@ export default function RemoteScreen({navigation}){
         {id:'7', button:'stop', motion:'stop', motionID: 7, icon: "controller-stop", iconType: "entypo"},
         {id:'8', button:'R', motion:'walk_right', motionID: 8, icon: "arrow-forward", iconType: "ion"},
         {id:'9', button:'LA', motion:'walk_forward_4step', motionID: 9, icon: null, iconType: "text"},
-        {id:'10', button:'D', motion:'basic_motion', motionID: 1, icon: "arrow-down", iconType: "ion"},
+        {id:'10', button:'D', motion:'basic_motion', motionID: 10, icon: "arrow-down", iconType: "ion"},
         {id:'11', button:'RA', motion:'walk_forward_6step', motionID: 11, icon: null, iconType: "text"},
-        //{id:'1', button: 'A', motion:'basic_motion'},
-        //{id:'2', button:'B', motion:'kick_right'},
+       
         
         //need to figure out how to add multiple styles for A and B buttons in flatlist
         
         
+    ]
+
+    const ab_buttons = [
+        {id:'1', button: 'A', motion:'basic_motion', motionID: 1, icon: null, iconType: "text"},
+        {id:'2', button:'B', motion:'kick_right', motionID: 2, icon: null, iconType: "text"},
     ]
 
     const { ipAddress, setIpAddress } = React.useContext(IpContext)
@@ -35,8 +39,8 @@ export default function RemoteScreen({navigation}){
     const [visible, setVisible] = React.useState(false);
     
     //prints motion for button press to console 
-    const handlePress = (motion) =>{
-        console.log(motion);
+    const handlePress = (motionID) =>{
+        console.log(motionID);
     }
    
     //api call
@@ -82,10 +86,10 @@ export default function RemoteScreen({navigation}){
                     keyExtractor={(item) => item.id}
                     data={buttons}
                     numColumns={3}
-                    renderItem={({ item }) => (
+                    renderItem={({ item, index }) => (
                         <TouchableOpacity style={styles.controllerButtons} onPress={() => {
                            buttonPress(item.motionID)
-                           //handlePress(item.motion)
+                           //handlePress(item.motionID)
                         }}>
                             { item.iconType === "ion" &&
                                 <Ionicons name={item.icon} size={40} color="white"/>
@@ -99,7 +103,28 @@ export default function RemoteScreen({navigation}){
                             
                         </TouchableOpacity>
                     )}
-                    />
+                />
+                <View style={styles.row}>
+                        <FlatList
+                        horizontal
+                        //contentContainerStyle={{flexGrow: 1, justifyContent:'center'}}
+                        contentContainerStyle={styles.ab}
+                        keyExtractor={(item) => item.id}
+                        data={ab_buttons}
+                        renderItem={({ item, index }) => (
+                            <TouchableOpacity style={styles.AB} onPress={() => {
+                            buttonPress(item.motionID)
+                            //handlePress(item.motionID)
+                            }}>
+            
+                                { item.iconType === "text" &&
+                                    <Text style={styles.funcButtons}>{item.button}</Text>
+                                }
+                            
+                            </TouchableOpacity>
+                        )}
+                        />
+                </View>
             </View>
         </View>
     );
@@ -142,10 +167,21 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         flexDirection:'row',
         width:350,
-        marginTop:10,
+        //marginTop:10,
+        marginBottom: 90,
         padding:10,
         alignItems:'center',
         justifyContent:'center',
         justifyContent:'space-between' 
+    },
+    AB:{
+        alignItems:'center',
+        justifyContent: 'center',
+        backgroundColor:'rgba(16,99,222,0.7)',
+        borderRadius: 50, 
+        borderWidth: 1,
+        borderColor: 'white',
+        width: 100,
+        height: 100,
     }
 })

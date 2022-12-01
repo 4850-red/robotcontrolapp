@@ -64,7 +64,7 @@ export default function HomeScreen({navigation}){
         navigation.navigate('Remote');
     }
 
-    function backPressed() {
+    function backPressed(){
         DevSettings.reload();
     }
 
@@ -90,7 +90,7 @@ export default function HomeScreen({navigation}){
                         <BarCodeScanner 
                         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
                         //style={StyleSheet.absoluteFill}
-                        style={{width:'100%', height:'75%'}}
+                        style={{width:'100%', height:'50%', margin:30}}
                         />
                     </>
 
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
         backgroundColor:  '#1063DE',
         top: 3,
         left: 3,
-        width: 50,
+        width: 80,
         height: 50,
         borderRadius: 10,
         position: 'absolute'

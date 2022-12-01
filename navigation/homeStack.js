@@ -29,11 +29,9 @@ export default function MainContainer(){
                 initialRouteName={homeName}
                 screenOptions={({route}) => ({ //maybe get rid of header 
                     headerStyle:{
-                        height: 67
+                        height: 50
                     },
-                    headerTitleStyle:{
-                        fontSize: 15
-                    },
+
                     tabBarIcon: ({focused, color, size}) => {
                         let iconName;
                         let routeName = route.name;
@@ -57,7 +55,7 @@ export default function MainContainer(){
 
                 })}>
     
-                <Tab.Screen name={homeName} component={HomeScreen} options={{tabBarStyle: {display: 'none'}}}/> 
+                <Tab.Screen name={homeName} component={HomeScreen} options={{tabBarStyle: {display: 'none'}, headerShown:false}}/> 
                 <Tab.Screen name={remoteName} component={RemoteScreen}/>
                 <Tab.Screen name={motionName} component={MotionScreen}/>
                 <Tab.Screen name={motorName} component={MotorScreen}/>
