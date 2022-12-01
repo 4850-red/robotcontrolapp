@@ -11,11 +11,13 @@ import RemoteScreen from '../screens/remoteScreen'
 import MotionScreen from '../screens/motionScreen'
 import MotorScreen from '../screens/motorScreen'
 
+
 //screen names
 const homeName = 'Home';
 const remoteName = 'Remote';
 const motionName = 'Motions';
 const motorName = 'Motors';
+
 
 const Tab = createBottomTabNavigator();
 
