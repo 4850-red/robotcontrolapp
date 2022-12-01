@@ -143,10 +143,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         width:350,
         height:650,
-        borderRadius: 10 
+        borderRadius: 10,
+        flex: .8,
     },
     row:{
-        flexDirection: 'row'
+        flexDirection: 'row',
     },
     controllerButtons:{
         alignItems:'center',
@@ -181,6 +182,8 @@ const styles = StyleSheet.create({
         borderRadius: 50, 
         borderWidth: 1,
         borderColor: 'white',
+        marginEnd: 15,
+        marginStart: 15,
         width: 100,
         height: 100,
     }

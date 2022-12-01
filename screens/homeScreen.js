@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native';
-import { FontAwesome5 } from '@expo/vector-icons'; 
-import axios from 'axios';
+import { FontAwesome5 } from '@expo/vector-icons';
 import IpContext from '../state/IpContext';
-import { BarCodeScanner, requestPermissionsAsync } from 'expo-barcode-scanner';
-import { DevSettings } from 'react-native';
+import { BarCodeScanner } from 'expo-barcode-scanner';
 
 const reg = /http:\/\/(?<ip>\d+.\d+.\d+.\d+):50000/;
+
+const ipReg = /(?<ip>\d+.\d+.\d+.\d+)/;
 
 //need to add connection to port as well
 
@@ -61,11 +61,17 @@ export default function HomeScreen({navigation}){
     }
 
     const connectPressed = () => {
-        navigation.navigate('Remote');
+        const match = ipReg.exec(ipAddress);
+
+        if (match !== null && match !== undefined && match.groups !== null) {
+            navigation.navigate('Remote');
+        } else {
+            alert("IP address is malformed. Please try again.");
+        }
     }
 
     function backPressed(){
-        DevSettings.reload();
+        setUseQRCode(false);
     }
 
     return(
@@ -84,14 +90,13 @@ export default function HomeScreen({navigation}){
                 }
                 { useQRCode && hasPermission === true && scanned === false &&
                     <>
-                        <TouchableOpacity style={styles.backButton} onPress={backPressed}>
-                            <Text style={{color: 'white', alignSelf:'center'}}> BACK</Text>
-                        </TouchableOpacity>
                         <BarCodeScanner 
-                        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-                        //style={StyleSheet.absoluteFill}
-                        style={{width:'100%', height:'50%', margin:30}}
+                            onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+                            style={{width:'100%', height:'50%', margin:30}}
                         />
+                        <TouchableOpacity style={styles.connectButton} onPress={backPressed}>
+                            <Text style={styles.inputText}> BACK</Text>
+                        </TouchableOpacity>
                     </>
 
                 }

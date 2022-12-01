@@ -29,7 +29,7 @@ export default function MainContainer(){
                 initialRouteName={homeName}
                 screenOptions={({route}) => ({ //maybe get rid of header 
                     headerStyle:{
-                        height: 50
+                        height: 0
                     },
 
                     tabBarIcon: ({focused, color, size}) => {

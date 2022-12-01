@@ -129,8 +129,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         width:350,
         height: 650,
-        margin: 10,
-        borderRadius: 10
+        borderRadius: 10,
+        flex: .8
     },
     itemStyle:{
         width:300,

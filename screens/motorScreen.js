@@ -79,7 +79,7 @@ export default function MotorScreen({navigation}){
             if (err.name === "AbortError") {
                 alert("Error. Motor request timed out.")
             } else {
-                alert(`Failed to call motor: ${value}, position: ${ roundedPosition }. Invalid IP Address?`);
+                alert(`Failed to call motor: ${value}, position: ${ mapped }. Invalid IP Address?`);
             }
         });
     }
@@ -164,7 +164,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderRadius: 10,
         width:350,
-        height:650
+        height:650,
+        flex: .8,
     },
     image:{
         width:'55%',
